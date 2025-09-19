@@ -1,0 +1,51 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+    <h1>Vending Machine Test Panel</h1>
+    <p>Select a motor to test:</p>
+
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        {% for i in motors %}
+            <div class="col">
+                <button class="btn btn-primary w-100 py-3 fw-bold motor-btn"
+                        data-url="{% url 'activate_motor' i %}">
+                    Motor {{ i }}
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+    document.querySelectorAll(".motor-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const url = this.dataset.url;
+            const originalText = this.innerHTML;
+
+            // Disable button and show loading spinner
+            this.disabled = true;
+            this.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading...
+            `;
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Restore button text
+                this.disabled = false;
+                this.innerHTML = originalText;
+            })
+            .catch(err => {
+                // Restore button text even if request fails
+                this.disabled = false;
+                this.innerHTML = originalText;
+            });
+        });
+    });
+</script>
+{% endblock %}
