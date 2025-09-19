@@ -1,0 +1,86 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="splash-container">
+    <img src="{% static 'VendOS/media/mystery.png' %}" 
+         alt="Package" 
+         class="dvd-logo" 
+         id="dvdLogo">
+    <div class="splash-text">Touch the screen to order</div>
+</div>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.splash-container {
+    position: relative;
+    width: 80%;
+    height: 80vh;
+    margin: 2rem auto;
+    overflow: hidden;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 12px;
+}
+
+.dvd-logo {
+    position: absolute;
+    width: 100px;   /* adjust size */
+    height: auto;
+}
+
+/* Text overlay */
+.splash-text {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #000;
+    pointer-events: none; /* so touches pass through if needed */
+}
+</style>
+
+<script>
+const logo = document.getElementById('dvdLogo');
+const container = document.querySelector('.splash-container');
+
+let posX = Math.random() * (container.clientWidth - logo.clientWidth);
+let posY = Math.random() * (container.clientHeight - logo.clientHeight);
+let velX = 2;
+let velY = 2;
+
+function animate() {
+    posX += velX;
+    posY += velY;
+
+    if (posX + logo.clientWidth >= container.clientWidth || posX <= 0) {
+        velX = -velX;
+        changeColor();
+    }
+    if (posY + logo.clientHeight >= container.clientHeight || posY <= 0) {
+        velY = -velY;
+        changeColor();
+    }
+
+    logo.style.left = posX + "px";
+    logo.style.top = posY + "px";
+
+    requestAnimationFrame(animate);
+}
+
+function changeColor() {
+    logo.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg)`;
+}
+
+animate();
+</script>
+{% endblock %}
