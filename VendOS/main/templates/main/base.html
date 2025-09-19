@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Robin & Ebbe Vending Solutions{% endblock %}</title>
+    <title>{% block title %}VendOS{% endblock %}</title>
     {% load static %}
     
     <!-- Bootstrap CSS (from CDN) -->
@@ -17,10 +17,10 @@
     <link rel="stylesheet" href="{% static 'VendOS/styles.css' %}">
 </head>
 <body>
-    <!-- Navbar -->
+   <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">Robin &amp; Ebbe Vending Solutions</a>
+        <div class="container-fluid justify-content-center">
+            <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">VendOS</a>
         </div>
     </nav>
     
