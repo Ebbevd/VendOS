@@ -26,23 +26,23 @@ except ImportError:
 
 # Define motor pins (just like before)
 MOTOR_PINS = {
-    1: 17,
-    2: 18,
-    3: 27,
-    4: 22,
-    5: 23,
-    6: 24,
-    7: 25,
-    8: 4,
-    9: 5,
-    10: 6,
-    11: 12,
-    12: 13,
-    13: 19,
-    14: 16,
-    15: 20,
-    16: 21,
-}
+    1: 17,  # Physical pin 11
+    2: 18,  # Physical pin 12
+    3: 27,  # Physical pin 13
+    4: 22,  # Physical pin 15
+    5: 23,  # Physical pin 16
+    6: 24,  # Physical pin 18
+    7: 25,  # Physical pin 22
+    8: 4,   # Physical pin 7
+    9: 5,   # Physical pin 29
+    10: 6,  # Physical pin 31
+    11: 12, # Physical pin 32
+    12: 13, # Physical pin 33
+    13: 19, # Physical pin 35
+    14: 16, # Physical pin 36
+    15: 20, # Physical pin 38
+    16: 21, # Physical pin 40
+} # GROUND Physical pins (one ground connection should be fine): 6, 9, 14, 20, 25, 30, 34, 39
 
 # Initialize pins
 for pin in MOTOR_PINS.values():
