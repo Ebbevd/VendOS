@@ -19,8 +19,17 @@
 <body>
    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
-        <div class="container-fluid justify-content-center">
-            <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">VendOS</a>
+        <div class="container-fluid position-relative">
+            <!-- Center: Brand -->
+            <div class="mx-auto">
+                <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">VendOS</a>
+            </div>
+
+            {% if DEBUG %}
+            <div class="position-absolute end-0 me-3">
+                <a class="nav-link text-white" href="{% url 'test_motors' %}">Test Environment</a>
+            </div>
+            {% endif %}
         </div>
     </nav>
     
