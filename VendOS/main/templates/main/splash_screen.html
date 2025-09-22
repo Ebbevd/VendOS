@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block content %}
-<div class="splash-container">
+<a href="{% url 'order_screen' %}" class="splash-container">
     <img src="{% static 'VendOS/media/mystery.png' %}" 
          alt="Package" 
          class="dvd-logo" 
          id="dvdLogo">
     <div class="splash-text">Touch the screen to order</div>
-</div>
+</a>
 
 <style>
 html, body {
@@ -17,21 +17,11 @@ html, body {
     height: 100%;
 }
 
-.splash-container {
-    position: relative;
-    width: 80%;
-    height: 80vh;
-    margin: 2rem auto;
-    overflow: hidden;
-    background-color: #fff;
-    border: 4px solid #000;
-    border-radius: 12px;
-}
-
 .dvd-logo {
     position: absolute;
-    width: 100px;   /* adjust size */
+    width: 100px;   /* fixed size for caching */
     height: auto;
+    will-change: transform; /* hint for smoother GPU rendering */
 }
 
 /* Text overlay */
@@ -45,7 +35,7 @@ html, body {
     font-size: 2rem;
     font-weight: bold;
     color: #000;
-    pointer-events: none; /* so touches pass through if needed */
+    pointer-events: none;
 }
 </style>
 
@@ -53,32 +43,63 @@ html, body {
 const logo = document.getElementById('dvdLogo');
 const container = document.querySelector('.splash-container');
 
-let posX = Math.random() * (container.clientWidth - logo.clientWidth);
-let posY = Math.random() * (container.clientHeight - logo.clientHeight);
+let logoWidth = logo.offsetWidth;
+let logoHeight = logo.offsetHeight;
+let containerWidth = container.clientWidth;
+let containerHeight = container.clientHeight;
+
+// Start position
+let posX = Math.random() * (containerWidth - logoWidth);
+let posY = Math.random() * (containerHeight - logoHeight);
+
+// Fixed speed
 let velX = 2;
 let velY = 2;
+
+// Track current hue
+let currentHue = 0;
+
+// Update container size when window resizes
+function updateContainerSize() {
+    containerWidth = container.clientWidth;
+    containerHeight = container.clientHeight;
+
+    // Ensure logo stays inside bounds after resize
+    if (posX + logoWidth > containerWidth) posX = containerWidth - logoWidth;
+    if (posY + logoHeight > containerHeight) posY = containerHeight - logoHeight;
+}
+window.addEventListener('resize', updateContainerSize);
 
 function animate() {
     posX += velX;
     posY += velY;
 
-    if (posX + logo.clientWidth >= container.clientWidth || posX <= 0) {
+    let bounced = false;
+
+    if (posX + logoWidth >= containerWidth || posX <= 0) {
         velX = -velX;
-        changeColor();
+        bounced = true;
     }
-    if (posY + logo.clientHeight >= container.clientHeight || posY <= 0) {
+    if (posY + logoHeight >= containerHeight || posY <= 0) {
         velY = -velY;
-        changeColor();
+        bounced = true;
     }
 
-    logo.style.left = posX + "px";
-    logo.style.top = posY + "px";
+    if (bounced) changeColor();
+
+    // GPU-friendly transform
+    logo.style.transform = `translate(${posX}px, ${posY}px)`;
 
     requestAnimationFrame(animate);
 }
 
 function changeColor() {
-    logo.style.filter = `hue-rotate(${Math.floor(Math.random() * 360)}deg)`;
+    let newHue;
+    do {
+        newHue = Math.floor(Math.random() * 360);
+    } while (Math.abs(newHue - currentHue) < 40);
+    currentHue = newHue;
+    logo.style.filter = `hue-rotate(${currentHue}deg)`;
 }
 
 animate();

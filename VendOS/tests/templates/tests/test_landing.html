@@ -1,0 +1,15 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="test-header" style="text-align: center;">
+    <h1>Test Menu</h1>
+</div>
+
+<div class="lined-container test-landing">
+    <div class="grid test-grid">
+        <a class="motor-btn" href="{% url 'test_motors' %}">Test Motors</a>
+        <a class="motor-btn">Test Payments</a>
+    </div>
+</div>
+{% endblock %}

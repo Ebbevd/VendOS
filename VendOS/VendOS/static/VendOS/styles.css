@@ -16,6 +16,38 @@ body {
     padding: 2rem;
 }
 
+.lined-container {
+    display: inline-block;
+    /* so it behaves like your old div */
+    position: relative;
+    margin: 2rem auto;
+    overflow: hidden;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 12px;
+    text-decoration: none;
+    /* remove underline */
+    color: inherit;
+    /* inherit text color */
+}
+
+.splash-container {
+    display: block;
+    /* so it behaves like your old div */
+    position: relative;
+    width: 80%;
+    height: 80vh;
+    margin: 2rem auto;
+    overflow: hidden;
+    background-color: #fff;
+    border: 4px solid #000;
+    border-radius: 12px;
+    text-decoration: none;
+    /* remove underline */
+    color: inherit;
+    /* inherit text color */
+}
+
 /* Test panel grid */
 .grid {
     display: grid;
@@ -38,4 +70,109 @@ body {
 
 .motor-btn:hover {
     background-color: #2980b9;
+}
+
+.vending-screen {
+    width: 90%;
+    max-width: 400px;
+    margin: 2rem auto;
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#slotCode {
+    width: 100%;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 4px solid #000;
+    /* thick outline like keypad */
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5rem;
+    /* spacing between digits */
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.keypad button {
+    font-size: 2rem;
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 2px solid #000;
+    background-color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.1s;
+    box-shadow: 0 3px #999;
+}
+
+.keypad button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px #666;
+    background-color: #eee;
+}
+
+button.confirm {
+    grid-column: span 3;
+    background-color: #28a745;
+    color: white;
+}
+
+button#clear {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Center the lined-container in the screen */
+.test-landing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* vertical center */
+    align-items: center;
+    /* horizontal center */
+    min-height: 80vh;
+    /* take most of the viewport height */
+    text-align: center;
+    gap: 2rem;
+    /* spacing between header and buttons */
+    padding: 2rem;
+}
+
+/* Make the buttons larger and stacked */
+.test-grid {
+    display: flex;
+    flex-direction: column;
+    /* vertical stack */
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+    /* limits width */
+    align-items: center;
+}
+
+.test-grid .motor-btn {
+    display: block;
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background-color: #3498db;
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+.test-grid .motor-btn:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
 }

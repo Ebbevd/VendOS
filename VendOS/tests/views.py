@@ -6,6 +6,9 @@ def test_motors_page(request):
     motors = range(1, 17)  # creates [1..16]
     return render(request, "tests/test_motors.html", {"motors": motors})
 
+def test_landiong_page(request):  
+    return render(request, "tests/test_landing.html")
+
 def test_motor(request, motor_id):
     if request.method == "POST":
         success = trigger_motor(motor_id)
