@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-395g4l$d4l+mhj*9znr$zasbqf#_kdph@2+-375)jfpf@apxi=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sympodial-plicately-fredia.ngrok-free.dev', "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -132,10 +132,15 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Webhook ID stripe 
+STRIPE_WH_ID = "we_1SBiAMEqCs85vuphxxE5NnCG" # Change to your actual webhook ID
 # Stripe env variables 
 STRIPE_PK_TEST = os.getenv("STRIPE_PK_TEST")
 STRIPE_PK_LIVE = os.getenv("STRIPE_PK_LIVE")
 STRIPE_SK_TEST = os.getenv("STRIPE_SK_TEST")
 STRIPE_SK_LIVE = os.getenv("STRIPE_SK_TEST")
 STRIPE_WH_SECRET = os.getenv("STRIPE_ENDPOINT")
+
+NGROK_SEC = os.getenv("NGROK_SEC")
+NGROK_TEST = os.getenv("NGROK_TEST")
 STRIPE_PAYMENT_LINK = "https://buy.stripe.com/14A5kD0g20Rd8Kd4iNfUQ00" # Move to env variable?

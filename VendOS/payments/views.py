@@ -1,27 +1,25 @@
 from django.shortcuts import render, redirect,  get_object_or_404
+import requests
 import stripe
 import qrcode
 import io
 import base64
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from main.models import Product
 from django.conf import settings
 from django.contrib import messages
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from .models import PaymentModel
 
 if settings.DEBUG:
     stripe.api_key = settings.STRIPE_SK_TEST
-    endpoint_secret = settings.STRIPE_WH_SECRET
-    if not endpoint_secret:
-        raise ValueError("STRIPE_WH_SECRET is not set in environment variables")
-    elif not settings.STRIPE_SK_TEST:
+    if not settings.STRIPE_SK_TEST:
         raise ValueError("STRIPE_SK_TEST is not set in environment variables")
 else:
     stripe.api_key = settings.STRIPE_SK_LIVE    
-    endpoint_secret = settings.STRIPE_WH_SECRET
-    if not endpoint_secret:
-        raise ValueError("STRIPE_WH_SECRET is not set in environment variables")
-    elif not settings.STRIPE_SK_LIVE:
+    if not settings.STRIPE_SK_LIVE:
         raise ValueError("STRIPE_SK_LIVE is not set in environment variables")
 
 # Create your views here.
@@ -65,16 +63,58 @@ def checkout(request, product_slot):
         "redirect_URL": request.build_absolute_uri(
         reverse('payment_success', kwargs={'session_id': session.id}) ),
     })
+    
+@csrf_exempt
+@require_POST
+def stripe_webhook(request):
+    print("Calling webhook")
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    if settings.DEBUG:
+        endpoint_secret = settings.NGROK_TEST 
+    else:
+        endpoint_secret = settings.NGROK_SEC
+        
+    endpoint_secret = endpoint_secret  # Using thunnel, should stay the same. 
+    print(endpoint_secret)
+
+    if not sig_header:
+        print("Missing Stripe signature header")
+        return HttpResponse(status=400)
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError as e:
+        print("Invalid payload:", e)
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        print("Invalid signature:", e)
+        return HttpResponse(status=400)
+
+    print("Received event:", event["type"])  # log event type
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        product_slot = session["metadata"].get("product_slot")
+        PaymentModel.objects.create(
+            product_slot=product_slot,
+            stripe_session_id=session["id"],
+            paid=True
+        )
+        print(f"Payment recorded for slot {product_slot} and session {session['id']}")
+
+    return HttpResponse(status=200)
 
 def check_payment(request, session_id):
     # Because we are working from a localhost we cannot use webhooks.
-    session = stripe.checkout.Session.retrieve(session_id)
-    paid = session.payment_status == "paid"
+    payment = PaymentModel.objects.filter(stripe_session_id=session_id).first()
 
     # Dispense the product if paid
-    if paid:
-        return JsonResponse({"paid": True})
+    if payment:
+        paid = payment.paid
+        return JsonResponse({"paid": paid})
     else:
+        # Object not found
         return JsonResponse({"paid": False})
 
 def payment_success(request, session_id):
