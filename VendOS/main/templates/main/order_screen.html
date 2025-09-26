@@ -7,13 +7,13 @@
         <div class="vending-screen">
             <h1>Enter Your Slot Code</h1>
 
-            <form method="post" id="vendingForm">
+            <form method="post" action="{% url 'order_package' %}" id="vendingForm">
                 {% csrf_token %}
                 <input type="text" name="slot_code" id="slotCode" readonly placeholder="00" />
 
                 <div class="keypad">
                     {% for num in "1234567890" %}
-                    <button type="button" class="key">{{ num }}</button>
+                        <button type="button" class="key">{{ num }}</button>
                     {% endfor %}
                     <button type="button" id="clear">C</button>
                     <button type="submit" class="confirm">Confirm</button>

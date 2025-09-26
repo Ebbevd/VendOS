@@ -1,2 +1,5 @@
 Django==4.2.24
 RPi.GPIO==0.7.1
+pillow==11.3.0
+qrcode==8.2
+stripe==12.5.1

@@ -1,0 +1,49 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="checkout-screen">
+    <div class="checkout-card">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-price">€{{ product.price }}</div>
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="Scan to pay">
+        </div>
+        <div class="instruction">Scan the QR code to complete your purchase</div>
+        <div id="payment-status" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<script>
+const sessionId = "{{ stripe_session_id }}";
+const statusDiv = document.getElementById("payment-status");
+const redirectUrl = "{{ redirect_URL }}";// success page
+
+// Generate the URL using Django template tag
+const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', sessionId);
+
+function checkPayment() {
+    fetch(checkPaymentUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.paid) {
+                statusDiv.innerText = "Payment received! Dispensing product...";
+                // Redirect to success page
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1500); // optional delay
+            } else {
+                statusDiv.innerText = "Waiting for payment...";
+                setTimeout(checkPayment, 2000);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            setTimeout(checkPayment, 5000);
+        });
+}
+
+// start polling
+checkPayment();
+</script>
+{% endblock content %}

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "tests.apps.TestsConfig",
     "main.apps.MainConfig",
+    "payments.apps.PaymentsConfig",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -130,3 +131,11 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Stripe env variables 
+STRIPE_PK_TEST = os.getenv("STRIPE_PK_TEST")
+STRIPE_PK_LIVE = os.getenv("STRIPE_PK_LIVE")
+STRIPE_SK_TEST = os.getenv("STRIPE_SK_TEST")
+STRIPE_SK_LIVE = os.getenv("STRIPE_SK_TEST")
+STRIPE_WH_SECRET = os.getenv("STRIPE_ENDPOINT")
+STRIPE_PAYMENT_LINK = "https://buy.stripe.com/14A5kD0g20Rd8Kd4iNfUQ00" # Move to env variable?
