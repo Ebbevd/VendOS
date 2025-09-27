@@ -8,4 +8,7 @@ class PaymentsConfig(AppConfig):
     def ready(self):
             from .setup_webhook import update_stripe_webhook
             # Replace with your actual webhook ID
-            update_stripe_webhook(settings.STRIPE_WH_ID)
+            if settings.DEBUG:
+                update_stripe_webhook(settings.STRIPE_WH_ID_TEST)
+            else:
+                update_stripe_webhook(settings.STRIPE_WH_ID_LIVE)

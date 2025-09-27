@@ -133,7 +133,8 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Webhook ID stripe 
-STRIPE_WH_ID = "we_1SBiAMEqCs85vuphxxE5NnCG" # Change to your actual webhook ID
+STRIPE_WH_ID_TEST = "we_1SBiAMEqCs85vuphxxE5NnCG" # Change to your actual webhook ID
+STRIPE_WH_ID_LIVE = "we_1SBgrYEqCs85vuphWbnETcjZ"
 # Stripe env variables 
 STRIPE_PK_TEST = os.getenv("STRIPE_PK_TEST")
 STRIPE_PK_LIVE = os.getenv("STRIPE_PK_LIVE")
