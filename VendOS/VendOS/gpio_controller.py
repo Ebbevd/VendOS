@@ -75,8 +75,8 @@ def trigger_motor(motor_id, duration=2):
         return False
 
     print(f"[DEBUG] Activating Motor {motor_id} on pin {pin}")
-    GPIO.output(pin, GPIO.HIGH)
-    time.sleep(duration)
     GPIO.output(pin, GPIO.LOW)
+    time.sleep(duration)
+    GPIO.output(pin, GPIO.HIGH)
     print(f"[DEBUG] Motor {motor_id} deactivated")
     return True
