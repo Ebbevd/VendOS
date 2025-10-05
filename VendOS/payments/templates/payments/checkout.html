@@ -9,8 +9,11 @@
         <div class="qr-code">
             <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="Scan to pay">
         </div>
-        <div class="instruction">Scan the QR code to complete your purchase</div>
+        <div class="instruction">Scan the QR code to complete your purchase. The product will be dispensed from slot {{product.slot_id}}.</div>
         <div id="payment-status" style="margin-top:20px;"></div>
+
+        <!-- 🆕 Cancel button -->
+        <button type="button" id="cancel" class="cancel-btn">Cancel</button>
     </div>
 </div>
 
@@ -19,30 +22,32 @@ const sessionId = "{{ stripe_session_id }}";
 const statusDiv = document.getElementById("payment-status");
 const redirectUrl = "{{ redirect_URL }}"; // success page
 const returnUrl = "{% url 'splash_screen' %}"; // fallback URL
+const cancelBtn = document.getElementById("cancel");
 
 // Generate the URL using Django template tag
 const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', sessionId);
 
-let startTime = Date.now(); // track when checking started
-const MAX_WAIT_TIME = {{ time_out }} * 1000; // convert to milliseconds
+let cancelled = false;
+
+// Cancel button handler
+cancelBtn.addEventListener("click", () => {
+    cancelled = true;
+    statusDiv.innerText = "Cancelling and returning...";
+    setTimeout(() => {
+        window.location.href = returnUrl;
+    }, 1000);
+});
 
 function checkPayment() {
-    const elapsed = Date.now() - startTime;
-
-    if (elapsed >= MAX_WAIT_TIME) {
-        statusDiv.innerText = "Payment not confirmed in time. Returning...";
-        setTimeout(() => {
-            window.location.href = returnUrl;
-        }, 2000);
-        return;
-    }
+    // Stop checking if cancelled
+    if (cancelled) return;
 
     fetch(checkPaymentUrl)
         .then(response => response.json())
         .then(data => {
+            if (cancelled) return; // stop polling if cancelled
             if (data.paid) {
                 statusDiv.innerText = "Payment received! Dispensing product...";
-                // Redirect to success page
                 setTimeout(() => {
                     window.location.href = redirectUrl;
                 }, 1500);
@@ -53,11 +58,17 @@ function checkPayment() {
         })
         .catch(err => {
             console.error(err);
-            setTimeout(checkPayment, 5000);
+            if (!cancelled) setTimeout(checkPayment, 5000);
         });
 }
 
-// start polling
+// Start polling
 checkPayment();
 </script>
+
+<style>
+.cancel-btn:hover {
+    background-color: #a00000;
+}
+</style>
 {% endblock content %}

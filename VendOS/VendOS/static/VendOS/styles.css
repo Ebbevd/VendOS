@@ -241,7 +241,7 @@ button#clear {
     background: white;
     padding: 40px 60px;
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .success-title {
@@ -265,6 +265,26 @@ button#clear {
     font-size: 1.1rem;
     color: #555;
 }
+
+.cancel-btn {
+    display: block;
+    /* ensures it behaves like a block element */
+    width: 100%;
+    /* fills the parent container's width */
+    margin-top: 20px;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    padding: 12px 0;
+    /* remove left/right padding since it spans full width */
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+    /* ensures padding doesn’t exceed width */
+}
+
 
 @keyframes pulse {
     0% {
@@ -311,4 +331,3 @@ button#clear {
         font-size: 1.1rem;
     }
 }
-
