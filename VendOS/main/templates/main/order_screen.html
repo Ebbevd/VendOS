@@ -26,6 +26,8 @@
     const input = document.getElementById('slotCode');
     const keys = document.querySelectorAll('.key');
     const clearBtn = document.getElementById('clear');
+    const timeOut = {{ time_out }} * 1000;
+    const returnUrl = "{% url 'splash_screen' %}";
 
     keys.forEach(key => {
         key.addEventListener('click', () => {
@@ -38,6 +40,10 @@
     clearBtn.addEventListener('click', () => {
         input.value = '';
     });
+
+    setTimeout(() => {
+        window.location.href = returnUrl;
+    }, timeOut);
 </script>
 
 {% endblock %}

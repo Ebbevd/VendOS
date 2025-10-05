@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect,  get_object_or_404
-import requests
 import stripe
 import qrcode
 import io
@@ -12,6 +11,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from .models import PaymentModel
+from VendOS import gpio_controller
 
 if settings.DEBUG:
     stripe.api_key = settings.STRIPE_SK_TEST
@@ -56,7 +56,9 @@ def checkout(request, product_slot):
     )
 
     qr_code_base64 = generate_qr_code(session.url)  # your existing QR code function
+    time_out = 600 # seconds before redirecting to splash screen
     return render(request, "payments/checkout.html", {
+        "time_out": time_out,
         "product": product,
         "qr_code_base64": qr_code_base64,
         "stripe_session_id": session.id,
@@ -67,16 +69,14 @@ def checkout(request, product_slot):
 @csrf_exempt
 @require_POST
 def stripe_webhook(request):
-    print("Calling webhook")
     payload = request.body
     sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
     if settings.DEBUG:
         endpoint_secret = settings.NGROK_TEST 
     else:
         endpoint_secret = settings.NGROK_SEC
-        
-    endpoint_secret = endpoint_secret  # Using thunnel, should stay the same. 
-    print(endpoint_secret)
+
+    print(f"Calling webhook endpoint {endpoint_secret} with sig header {sig_header}")
 
     if not sig_header:
         print("Missing Stripe signature header")
@@ -124,7 +124,12 @@ def payment_success(request, session_id):
     if paid:
         product = get_object_or_404(Product, slot_id=session.metadata['product_slot'])
         if product.stock > 0:
-            return render(request, "payments/product_dispense.html", {"product": product})
+            dispense_time = 5
+            context = {
+                "product": product,
+                "dispense_time": dispense_time,
+            }
+            return render(request, "payments/product_dispense.html", context)
             # Dispensing will happen within the java script code
         else:
             messages.error(request, "Something went wrong, we will refund you.")
@@ -134,8 +139,11 @@ def payment_success(request, session_id):
         print("Session not paid yet")
         return redirect('order_screen')
     
-def dispense_product(product):
-    pass # will do later
+
+def dispense_api(request, product_id, dispense_time):
+    product = Product.objects.get(id=product_id)
+    gpio_controller.trigger_motor(product.motor_id, duration=dispense_time)
+    return JsonResponse({"status": "dispensing"})
 
 
 def generate_qr_code(data):

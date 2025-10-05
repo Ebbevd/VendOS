@@ -7,7 +7,10 @@ def splash_screen_view(request):
     return render(request, "main/splash_screen.html")
 
 def order_screen_view(request):
-    return render(request, "main/order_screen.html")
+    context = {
+        "time_out": 10,  # seconds before redirecting to splash screen
+    }
+    return render(request, "main/order_screen.html", context)
 
 def order_package(request):
     if request.method == "POST":

@@ -228,6 +228,44 @@ button#clear {
     color: #2d3436;
 }
 
+.success-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+    background-color: white;
+}
+
+.success-card {
+    text-align: center;
+    background: white;
+    padding: 40px 60px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.success-title {
+    color: #28a745;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.success-message {
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+}
+
+.gear-animation {
+    width: 150px;
+    height: 100px;
+    margin-bottom: 15px;
+}
+
+.dispense-text {
+    font-size: 1.1rem;
+    color: #555;
+}
+
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -273,3 +311,4 @@ button#clear {
         font-size: 1.1rem;
     }
 }
+

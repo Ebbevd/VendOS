@@ -17,12 +17,26 @@
 <script>
 const sessionId = "{{ stripe_session_id }}";
 const statusDiv = document.getElementById("payment-status");
-const redirectUrl = "{{ redirect_URL }}";// success page
+const redirectUrl = "{{ redirect_URL }}"; // success page
+const returnUrl = "{% url 'splash_screen' %}"; // fallback URL
 
 // Generate the URL using Django template tag
 const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', sessionId);
 
+let startTime = Date.now(); // track when checking started
+const MAX_WAIT_TIME = {{ time_out }} * 1000; // convert to milliseconds
+
 function checkPayment() {
+    const elapsed = Date.now() - startTime;
+
+    if (elapsed >= MAX_WAIT_TIME) {
+        statusDiv.innerText = "Payment not confirmed in time. Returning...";
+        setTimeout(() => {
+            window.location.href = returnUrl;
+        }, 2000);
+        return;
+    }
+
     fetch(checkPaymentUrl)
         .then(response => response.json())
         .then(data => {
@@ -31,7 +45,7 @@ function checkPayment() {
                 // Redirect to success page
                 setTimeout(() => {
                     window.location.href = redirectUrl;
-                }, 1500); // optional delay
+                }, 1500);
             } else {
                 statusDiv.innerText = "Waiting for payment...";
                 setTimeout(checkPayment, 2000);
