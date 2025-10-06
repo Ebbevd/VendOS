@@ -1,0 +1,19 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="error-screen">
+    <div class="error-card">
+        <h1 class="error-title">Oops!</h1>
+        <p class="error-message">Something went wrong</p>
+        <div class="error-section">
+            <img src="{% static 'VendOS/media/error.png' %}" alt="Error" class="error-animation">
+            <p class="error-text">Feel free to let us know about the issue: +31649372053</p>
+        </div>
+    </div>
+</div>
+
+<style>
+
+</style>
+{% endblock content %}

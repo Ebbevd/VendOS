@@ -18,20 +18,19 @@
 </head>
 <body>
    <!-- Navbar -->
+   {% if DEBUG %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
         <div class="container-fluid position-relative">
             <!-- Center: Brand -->
             <div class="mx-auto">
                 <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">VendOS</a>
             </div>
-
-            {% if DEBUG %}
             <div class="position-absolute end-0 me-3">
-                <a class="nav-link text-white" href="{% url 'test_landing_page' %}">Test Environment</a>
+                <a class="nav-link text-white" href="{% url 'test_landing_page' %}">Maintenance</a>
             </div>
-            {% endif %}
         </div>
     </nav>
+    {% endif %}
     <!-- Messages -->
     {% if messages %}
     <div style="margin-top: 15px;">
@@ -49,18 +48,17 @@
             {% endif %}
         {% endfor %}
     </div>
+    {% if messages %}
     <script>
-    // Wait for 3 seconds, then remove all alerts
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            // Bootstrap 5 fade out
-            alert.classList.remove('show');
-            alert.classList.add('hide');
-            setTimeout(() => alert.remove(), 500); // Remove from DOM after fade out
-        });
-    }, 3000);
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.classList.remove('show');
+                alert.classList.add('hide');
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 3000);
     </script>
+    {% endif %}
     {% endif %}
         
     <!-- Content -->

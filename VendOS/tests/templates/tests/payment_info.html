@@ -1,0 +1,77 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+<h1 class="text-center">Payment & Refund Overview</h1>
+
+<div class="mb-4 text-center">
+    <h4 class="text-success">Total Payments: €{{ total_payments }}</h4>
+    <h4 class="text-danger">Total Refunds: €{{ total_refunds }}</h4>
+    <h5 class="text-primary">Net Total: €{{ net_total }}</h5>
+
+    <!-- Test Mode Toggle Button -->
+    <div class="mt-3">
+        <button id="test-mode-btn" class="btn btn-warning fw-bold">
+            Toggle Test Mode
+        </button>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white fw-bold">
+                Payments (shows 100)
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for p in payments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <p class="mb-0 text-truncate" style="max-width: 70%;">
+                            {{ p.stripe_session_id }}
+                        </p>
+                        <span class="fw-bold ms-2">${{ p.amount }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No payments found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white fw-bold">
+                Potential Refunds (shows 100)
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for r in refunds %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <p class="mb-0 text-truncate" style="max-width: 70%;">
+                            {{ r.stripe_session_id }}
+                        </p>
+                        <span class="fw-bold ms-2">${{ r.amount }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No potential refunds found.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("test-mode-btn");
+
+    // Set initial state if passed from the view (optional)
+    let testModeOn = {{ test_mode|default:0 }};
+
+    btn.innerText = testModeOn ? "Test Mode: ON" : "Test Mode: OFF";
+
+    btn.addEventListener("click", function() {
+        const newMode = testModeOn ? 0 : 1;  // toggle
+        const url = `{% url 'payment_info' 0 %}`.replace('/0/', `/${newMode}/`);
+        window.location.href = url;  // redirect to updated test_mode
+    });
+});
+</script>
+{% endblock %}

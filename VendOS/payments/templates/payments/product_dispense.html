@@ -19,13 +19,14 @@
     const returnUrl = "{% url 'splash_screen' %}";
 
     fetch(`/payments/dispense/${productId}/${dispenseTime}/`)
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(err => console.error(err));
+    .then(res => res.json())
+    .then(data => console.log(data)) // motor started in background
+    .catch(err => console.error(err));
 
-    setTimeout(() => {
-        window.location.href = returnUrl;
-    }, dispenseTime * 1000);
+setTimeout(() => {
+    window.location.href = returnUrl; // redirect after dispenseTime
+}, dispenseTime * 1000);
+
 </script>
 
 {% endblock content %}

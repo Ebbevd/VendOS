@@ -73,11 +73,20 @@ body {
 }
 
 .vending-screen {
+    position: relative;
+    /* ensure stacking context */
+    z-index: 10;
     width: 90%;
     max-width: 400px;
     margin: 2rem auto;
     text-align: center;
     font-family: sans-serif;
+}
+
+.alert {
+    position: relative;
+    z-index: 1;
+    /* lower than keypad */
 }
 
 #slotCode {
@@ -283,6 +292,55 @@ button#clear {
     transition: background-color 0.3s;
     box-sizing: border-box;
     /* ensures padding doesn’t exceed width */
+}
+
+.error-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    background-color: #f8d7da;
+}
+
+.error-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+}
+
+.error-title {
+    color: #721c24;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    color: #721c24;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.error-animation {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+
+.retry-button {
+    background-color: #f5c6cb;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    color: #721c24;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.retry-button:hover {
+    background-color: #f1b0b7;
 }
 
 

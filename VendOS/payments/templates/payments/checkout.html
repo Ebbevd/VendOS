@@ -23,6 +23,7 @@ const statusDiv = document.getElementById("payment-status");
 const redirectUrl = "{{ redirect_URL }}"; // success page
 const returnUrl = "{% url 'splash_screen' %}"; // fallback URL
 const cancelBtn = document.getElementById("cancel");
+const errorUrl = "{% url 'error_page' %}"; // Error page
 
 // Generate the URL using Django template tag
 const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', sessionId);
@@ -39,13 +40,20 @@ cancelBtn.addEventListener("click", () => {
 });
 
 function checkPayment() {
-    // Stop checking if cancelled
     if (cancelled) return;
 
     fetch(checkPaymentUrl)
         .then(response => response.json())
         .then(data => {
-            if (cancelled) return; // stop polling if cancelled
+            if (cancelled) return;
+
+            // Redirect to error page if there is an error
+            if (data.error) {  // assumes backend sets error=true on error
+                console.log("Error detected:", data);
+                window.location.href = errorUrl;
+                return;
+            }
+
             if (data.paid) {
                 statusDiv.innerText = "Payment received! Dispensing product...";
                 setTimeout(() => {
@@ -61,9 +69,7 @@ function checkPayment() {
             if (!cancelled) setTimeout(checkPayment, 5000);
         });
 }
-
-// Start polling
-checkPayment();
+setTimeout(checkPayment, 5000);
 </script>
 
 <style>
