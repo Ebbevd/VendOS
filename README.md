@@ -25,6 +25,8 @@ VendOS provides a simple web-based interface to control vending machine motors, 
   - Django 4+  
   - RPi.GPIO or gpiozero (optional, mocked in dev)  
   - Bootstrap (loaded via CDN)  
+  - Ngrok, this way no domain is needed and everything runs via localhost
+  - Stripe is used to provide card payments. 
 
 ---
 
