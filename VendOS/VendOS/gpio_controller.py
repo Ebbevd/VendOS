@@ -1,82 +1,63 @@
-# gpio_controller.py
-MOTOR_PINS = {
-    1: 17,  # Physical pin 11
-    2: 18,  # Physical pin 12
-    3: 27,  # Physical pin 13
-    4: 22,  # Physical pin 15
-    5: 23,  # Physical pin 16
-    6: 24,  # Physical pin 18
-    7: 25,  # Physical pin 22
-    8: 4,   # Physical pin 7
-    9: 5,   # Physical pin 29
-    10: 6,  # Physical pin 31
-    11: 12, # Physical pin 32
-    12: 13, # Physical pin 33
-    13: 19, # Physical pin 35
-    14: 16, # Physical pin 36
-    15: 20, # Physical pin 38
-    16: 21, # Physical pin 40
-} # GROUND Physical pins (one ground connection should be fine): 6, 9, 14, 20, 25, 30, 34, 39
-
-# gpio_controller.py
+# gpio_controller.py (Arduino serial with safe fallback)
 import time
-import platform
 
-_initialized = False
-GPIO = None
-REAL_GPIO = False
+# Mapping motor IDs 1–16
+MOTOR_IDS = list(range(1, 17))
 
-def _is_raspberry_pi():
-    arch = platform.machine().lower()
-    return arch.startswith("arm") or arch.startswith("aarch64")
+# Serial connection (initialized later)
+ser = None
+REAL_ARDUINO = False
 
-def init_pins():
-    """Initialize GPIO pins if running on a Pi with real GPIO."""
-    global _initialized, GPIO, REAL_GPIO
-    if _initialized:
-        return
+# Arduino serial port and baud rate
+ARDUINO_PORT = '/dev/ttyACM0'  # change as needed
+BAUD_RATE = 9600
 
-    if _is_raspberry_pi():
-        import RPi.GPIO as GPIO
-        GPIO.setmode(GPIO.BCM)
-        REAL_GPIO = True
-    else:
-        # fallback mock for non-Pi systems
-        print("[INFO] Not running on a Raspberry Pi. Using mock GPIO.")
-        class MockGPIO:
-            BCM = "BCM"
-            OUT = "OUT"
-            HIGH = 1
-            LOW = 0
+# Arduino pinouts:
+#const int RELAY_PINS[16] = {
+  #22, 23, 24, 25, 26, 27, 28, 29,
+  #30, 31, 32, 33, 34, 35, 36, 37
+#};
 
-            def setmode(self, mode): 
-                print(f"[MOCK] GPIO mode set: {mode}")
-
-            def setup(self, pin, mode): 
-                print(f"[MOCK] Setup pin {pin} as {mode}")
-
-            def output(self, pin, state): 
-                print(f"[MOCK] Pin {pin} set to {'HIGH' if state else 'LOW'}")
-
-        GPIO = MockGPIO()
-        REAL_GPIO = False
-
-    for pin in MOTOR_PINS.values():
-        GPIO.setup(pin, GPIO.OUT)
-        GPIO.output(pin, GPIO.LOW)
-
-    _initialized = True
+# Try to initialize serial
+try:
+    import serial
+    ser = serial.Serial(ARDUINO_PORT, BAUD_RATE, timeout=1)
+    time.sleep(2)  # give Arduino time to reset
+    REAL_ARDUINO = True
+    print(f"[INFO] Connected to Arduino on {ARDUINO_PORT}")
+except Exception as e:
+    print(f"[WARNING] Could not connect to Arduino: {e}")
+    print("[INFO] Running in mock mode")
+    ser = None
 
 def trigger_motor(motor_id, duration=2):
-    """Activate a motor (or mock it on non-Pi)."""
-    init_pins()
-    pin = MOTOR_PINS.get(motor_id)
-    if not pin:
+    """
+    Activate a motor via Arduino.
+    motor_id: 1–16
+    duration: seconds (converted to ms for Arduino)
+    """
+    if motor_id not in MOTOR_IDS:
+        print(f"[ERROR] Invalid motor ID: {motor_id}")
         return False
 
-    print(f"[DEBUG] Activating Motor {motor_id} on pin {pin}")
-    GPIO.output(pin, GPIO.LOW)
-    time.sleep(duration)
-    GPIO.output(pin, GPIO.HIGH)
-    print(f"[DEBUG] Motor {motor_id} deactivated")
+    duration_ms = int(duration * 1000)
+    cmd = f"{motor_id} {duration_ms}\n"
+
+    if REAL_ARDUINO and ser is not None:
+        try:
+            ser.write(cmd.encode())
+            print(f"[DEBUG] Sent command to Arduino: Motor {motor_id} for {duration_ms}ms")
+        except Exception as e:
+            print(f"[ERROR] Failed to send command to Arduino: {e}")
+            print("[INFO] Running in mock mode")
+    else:
+        # mock mode if Arduino not connected
+        print(f"[MOCK] Would activate Motor {motor_id} for {duration_ms}ms")
+
     return True
+
+def close_serial():
+    if REAL_ARDUINO and ser is not None:
+        ser.close()
+        print("[INFO] Serial port closed")
+        
