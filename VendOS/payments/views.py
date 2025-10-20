@@ -40,7 +40,6 @@ def checkout(request, product_slot):
             stripe_session_id = "", # Not known yet
             product_slot= product.slot_id,              
             amount = product.price)
-
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{
@@ -52,6 +51,13 @@ def checkout(request, product_slot):
             'quantity': 1,
         }],
         mode='payment',
+        payment_intent_data={
+        "metadata": {
+            "payment_id": payment.id,
+            "product_slot": product.slot_id,
+            "unit_price": product.price,
+        }
+        },
         metadata={
             "payment_id": payment.id,
             "product_slot": product.slot_id,
@@ -61,16 +67,20 @@ def checkout(request, product_slot):
         cancel_url="https://example.com/cancel",
     )
     
-    payment.stripe_session_id = session.payment_intent
+    if session.payment_intent:
+        payment.stripe_session_id = session.payment_intent
+
     payment.save()
+    
+    # Safer option to update stripe payment intent, sure way to make the webhook call work.
     
     qr_code_base64 = generate_qr_code(session.url)  # your existing QR code function
     return render(request, "payments/checkout.html", {
         "product": product,
         "qr_code_base64": qr_code_base64,
-        "stripe_session_id": session.payment_intent,
+        "payment_id": payment.id,
         "redirect_URL": request.build_absolute_uri(
-        reverse('payment_success', kwargs={'session_id': session.payment_intent}) ),
+        reverse('payment_success', kwargs={'id': payment.id}) ),
     })
     
 @csrf_exempt
@@ -128,29 +138,30 @@ def stripe_webhook(request):
         payment.test = test_mode
         payment.most_recent_intent = "checkout.session.completed"
         payment.save()
+        dispense_api(request=request, product_id=payment.product_slot, dispense_time=settings.DISPENSE_TIME)
         print(f"Payment recorded for {session['id']}")
     return HttpResponse(status=200)
 
-def check_payment(request, session_id):
+def check_payment(request, id):
     # Because we are working from a localhost we cannot use webhooks.
-    payment = PaymentModel.objects.filter(stripe_session_id=session_id).first()
+    payment = PaymentModel.objects.get(id=int(id))
 
     # Dispense the product if paid
-    if payment and payment.most_recent_intent:
+    if payment:
         paid = payment.paid
         return JsonResponse({"paid": paid})
     else:
         # Object not found
-        print(f"Payment object not found or no intent, redirecting to error page {payment}, {payment.most_recent_intent}")
+        print(f"Payment object not found or no intent, redirecting to error page")
         return JsonResponse({"paid": False, 'error': True})
 
-def payment_success(request, session_id):
+def payment_success(request, id):
     if settings.DEBUG:  
         test_mode = True
     else:
         test_mode = False
     try:
-        payment = get_object_or_404(PaymentModel, stripe_session_id=session_id)
+        payment = get_object_or_404(PaymentModel, id=id)
         
     except PaymentModel.DoesNotExist:
          RefundModel.objects.create(
@@ -195,6 +206,7 @@ def payment_success(request, session_id):
     
 
 def dispense_api(request, product_id, dispense_time):
+    print("Dispensing poruduct")
     product = Product.objects.get(id=product_id)
     product.stock -= 1
     product.save()
@@ -206,7 +218,6 @@ def dispense_api(request, product_id, dispense_time):
             print(f"Motor error: {e}")
 
     threading.Thread(target=run_motor, daemon=True).start()
-    return JsonResponse({"status": "dispensing"})
 
 
 def generate_qr_code(data):

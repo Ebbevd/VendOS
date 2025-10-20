@@ -1,25 +1,92 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+import subprocess
 from .models import Product
 import requests
+import stripe
+import time
+from django.conf import settings
 
 # Create your views here.
 def splash_screen_view(request):
     return render(request, "main/splash_screen.html")
 
-def order_screen_view(request):
-    # Check ngrok first 
+# --- Helper functions --- #
+
+def get_ngrok_url():
+    """Fetch the current ngrok public HTTPS URL."""
     try:
         tunnels = requests.get("http://127.0.0.1:4040/api/tunnels").json()
-        for t in tunnels["tunnels"]:
-            if t["proto"] == "https":
-                context = {
-                    "time_out": 300,  # seconds before redirecting to splash screen
-                }
-                return render(request, "main/order_screen.html", context)
+        for t in tunnels.get("tunnels", []):
+            if t.get("proto") == "https":
+                return t.get("public_url")
     except Exception as e:
         print("Could not get ngrok URL:", e)
-        print("Redirecting to error page")
+    return None
+
+
+def start_ngrok(port=8000, sleep=2):
+    """Start ngrok in background if not running."""
+    try:
+        subprocess.Popen(
+            ["ngrok", "http", str(port)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        print(f"Starting ngrok tunnel on port {port}...")
+        time.sleep(sleep)  # Give ngrok time to initialize
+        return get_ngrok_url()
+    except Exception as e:
+        print("Error starting ngrok:", e)
+        return None
+
+
+def update_stripe_webhook(webhook_id):
+    """Update the Stripe webhook endpoint to the current ngrok URL."""
+    ngrok_url = get_ngrok_url()
+    if not ngrok_url:
+        print("No ngrok URL found; cannot update Stripe webhook.")
+        return False
+
+    try:
+        stripe.WebhookEndpoint.modify(
+            webhook_id,
+            url=f"{ngrok_url}/payments/webhook/"
+        )
+        print(f"✅ Stripe webhook updated to {ngrok_url}/payments/webhook/")
+        return True
+    except Exception as e:
+        print("❌ Error updating Stripe webhook:", e)
+        return False
+
+
+# --- Main view --- #
+
+def order_screen_view(request):
+    if settings.DEBUG:
+        WEBHOOK_ID = settings.STRIPE_WH_ID_TEST
+    else:
+        WEBHOOK_ID = settings.STRIPE_WH_ID_LIVE
+
+    try:
+        # 1️⃣ Try to get existing ngrok URL
+        ngrok_url = get_ngrok_url()
+        if not ngrok_url:
+            print("Ngrok not found; attempting to start it...")
+            ngrok_url = start_ngrok(port=8000)
+            time.sleep(2)  # wait a bit longer for ngrok to stabilize
+            # 2️⃣ If we successfully got an ngrok URL, update Stripe webhook
+            if ngrok_url:
+                update_stripe_webhook(WEBHOOK_ID)
+                context = {"time_out": 300}
+                return render(request, "main/order_screen.html", context)
+
+            else:# 3️⃣ If ngrok still failed, show error
+                raise Exception("Ngrok tunnel could not be established")
+        else:
+            return render(request, "main/order_screen.html", context={"time_out": 300})
+    except Exception as e:
+        print("Error in order_screen_view:", e)
         return render(request, "payments/error_page.html")
 
     

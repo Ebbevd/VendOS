@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['sympodial-plicately-fredia.ngrok-free.dev', "127.0.0.1", "localhost"]
 
+DISPENSE_TIME = 5  # seconds
+
 
 # Application definition
 

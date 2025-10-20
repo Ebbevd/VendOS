@@ -18,7 +18,7 @@
 </div>
 
 <script>
-const sessionId = "{{ stripe_session_id }}";
+const id = "{{ payment_id }}";
 const statusDiv = document.getElementById("payment-status");
 const redirectUrl = "{{ redirect_URL }}"; // success page
 const returnUrl = "{% url 'splash_screen' %}"; // fallback URL
@@ -26,7 +26,7 @@ const cancelBtn = document.getElementById("cancel");
 const errorUrl = "{% url 'error_page' %}"; // Error page
 
 // Generate the URL using Django template tag
-const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', sessionId);
+const checkPaymentUrl = "{% url 'check-payment' 'SESSION_ID_PLACEHOLDER' %}".replace('SESSION_ID_PLACEHOLDER', id);
 
 let cancelled = false;
 

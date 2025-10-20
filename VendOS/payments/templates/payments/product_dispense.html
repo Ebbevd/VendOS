@@ -14,14 +14,8 @@
 </div>
 
 <script>
-    const productId = {{ product.id }};
     const dispenseTime = {{ dispense_time }};
     const returnUrl = "{% url 'splash_screen' %}";
-
-    fetch(`/payments/dispense/${productId}/${dispenseTime}/`)
-    .then(res => res.json())
-    .then(data => console.log(data)) // motor started in background
-    .catch(err => console.error(err));
 
 setTimeout(() => {
     window.location.href = returnUrl; // redirect after dispenseTime
