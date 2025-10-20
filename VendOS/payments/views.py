@@ -1,9 +1,5 @@
 from django.shortcuts import render, redirect,  get_object_or_404
-import stripe
-import qrcode
-import threading
-import io
-import base64
+from django.test import RequestFactory
 from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from main.models import Product
@@ -14,6 +10,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import PaymentModel, RefundModel
 from VendOS import gpio_controller
 
+import stripe
+import qrcode
+import threading
+import io
+import base64
+import time
 
 if settings.DEBUG:
     stripe.api_key = settings.STRIPE_SK_TEST
@@ -23,6 +25,28 @@ else:
     stripe.api_key = settings.STRIPE_SK_LIVE    
     if not settings.STRIPE_SK_LIVE:
         raise ValueError("STRIPE_SK_LIVE is not set in environment variables")
+
+
+def test_webhook_connectivity():
+    intent = stripe.PaymentIntent.create(
+    amount=1000,
+    currency="usd",
+    payment_method_types=["card"],
+    )
+    
+    one_minute_ago = int(time.time()) - 60
+    
+    events = stripe.Event.list(
+    limit=5,                # max number of events returned
+    created={"gte": one_minute_ago}  # only events created in the last 60 seconds
+    )
+
+    for e in events:
+        if e.type == "payment_intent.created" and e.data.object.id == intent.id:
+            print(f"Webhook connectivity test successful. Event type: {e.type}")
+            return True
+    return False
+        
 
 # Create your views here.
 def checkout(request, product_slot):
@@ -34,6 +58,14 @@ def checkout(request, product_slot):
         stripe_session_id: the Stripe session ID to check payment status
         redirect_url: the URL to redirect to after payment
     """
+    
+    # First let us test if the webhook is working
+    response = test_webhook_connectivity()
+    
+    if response is False:
+        print("Webhook test failed, cannot proceed to checkout.")
+        return render(request, "payments/error_page.html")
+    
     product = get_object_or_404(Product, slot_id=product_slot)
     
     payment, created = PaymentModel.objects.get_or_create(
