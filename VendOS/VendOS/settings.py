@@ -114,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # settings.py
 
 CORS_ALLOWED_ORIGINS = [
-    "https://www.ds-technical-solutions.nl", ]
+    "https://www.ds-technical-solutions.nl", ] # Optionally add a frontend URL to check the status of the vending machine
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "ngrok-skip-browser-warning",
