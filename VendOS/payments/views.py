@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from .models import PaymentModel, RefundModel
+from status.models import Status    
 from VendOS import gpio_controller
 
 import stripe
@@ -64,7 +65,7 @@ def checkout(request, product_slot):
     
     if response is False:
         print("Webhook test failed, cannot proceed to checkout.")
-        return render(request, "payments/error_page.html")
+        return redirect('error_page')
     
     product = get_object_or_404(Product, slot_id=product_slot)
     
@@ -271,5 +272,17 @@ def generate_qr_code(data):
     qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
     return qr_code_base64
 
-def error_page(request):  
-    return render(request, "payments/error_page.html")
+def error_page(request): 
+    status = Status.objects.first()
+    
+    if status:
+        status.errored = True
+        status.save()
+    else:
+        status = Status.objects.create(errored=True)
+        status.save()
+        
+    redirect_url = request.build_absolute_uri(reverse('splash_screen'))
+        
+    
+    return render(request, "payments/error_page.html", {"redirect_url": redirect_url})

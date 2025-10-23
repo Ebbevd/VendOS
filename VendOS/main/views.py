@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 import subprocess
 from .models import Product
+from status.models import Status
 import requests
 import stripe
 import time
@@ -9,6 +10,12 @@ from django.conf import settings
 
 # Create your views here.
 def splash_screen_view(request):
+    status = Status.objects.first()
+    
+    if status:
+        if status.errored:
+            status.errored = False
+            status.save()
     return render(request, "main/splash_screen.html")
 
 # --- Helper functions --- #
@@ -87,7 +94,7 @@ def order_screen_view(request):
             return render(request, "main/order_screen.html", context={"time_out": 300})
     except Exception as e:
         print("Error in order_screen_view:", e)
-        return render(request, "payments/error_page.html")
+        return redirect('error_page')
 
     
     

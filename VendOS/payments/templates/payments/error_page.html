@@ -13,7 +13,11 @@
     </div>
 </div>
 
-<style>
+<!-- Redirect after 5 minutes -->
+<script>
+    setTimeout(function() {
+        window.location.href = "{{ redirect_url }}";
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+</script>
 
-</style>
 {% endblock content %}
