@@ -19,7 +19,11 @@ VendOS provides a simple web-based interface to control vending machine motors, 
 
 ## Requirements
 
-- **Hardware**: Raspberry Pi with GPIO-accessible motors (via relays or motor drivers)  
+- **Hardware**: 
+  - Raspberry Pi with GPIO-pins to run your motors
+  - Arduino so 5V signals can be sent to a relay.
+  - Relay board: we used a 16 module board to run the motors.
+
 - **Software**:
   - Python 3.10+  
   - Django 4+  
@@ -27,8 +31,15 @@ VendOS provides a simple web-based interface to control vending machine motors, 
   - Bootstrap (loaded via CDN)  
   - Ngrok, this way no domain is needed and everything runs via localhost
   - Stripe is used to provide card payments. 
+  - (optional) use NGROK to send traffic to the local host of the machine, meaning one does not nessesarily need to configure the pi as a server.
 
 ---
+
+## How to set this up
+
+To get up and running you will need some knowledge of electrical cirquits and programming. This repo also does not contain code for the arduino. This repo gives a web based interface that talks to the arduino. The arduino handels the rest. A basic scheme of how this can function is given below:
+
+![Alt text](repo_imgs/vending_scheme.png)
 
 ## Development Status
 
