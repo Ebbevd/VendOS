@@ -17,7 +17,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+VEND_NAME = "Dijk & Snijders"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -167,6 +167,6 @@ STRIPE_SK_TEST = os.getenv("STRIPE_SK_TEST")
 STRIPE_SK_LIVE = os.getenv("STRIPE_SK_LIVE")
 STRIPE_WH_SECRET = os.getenv("STRIPE_ENDPOINT")
 
-NGROK_SEC = os.getenv("NGROK_SEC")
-NGROK_TEST = os.getenv("NGROK_TEST")
+NGROK_SEC = os.getenv("NGROK_SEC") # Stripe webhook secret
+NGROK_TEST = os.getenv("NGROK_TEST") # Stripe webhook test secret
 STRIPE_PAYMENT_LINK = "https://buy.stripe.com/14A5kD0g20Rd8Kd4iNfUQ00" # Move to env variable?

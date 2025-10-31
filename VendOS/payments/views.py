@@ -198,7 +198,7 @@ def payment_success(request, id):
         
     except PaymentModel.DoesNotExist:
          RefundModel.objects.create(
-                stripe_charge=payment.stripe_session_id,
+                stripe_charge_id=payment.stripe_session_id,
                 amount=10,  # default amount if product is unknown
                 reason=f"Something went wrong",
                 test = test_mode
@@ -209,13 +209,13 @@ def payment_success(request, id):
             product = get_object_or_404(Product, slot_id=payment.product_slot)
         except Product.DoesNotExist:
             RefundModel.objects.create(
-                stripe_charge=payment.stripe_session_id,
+                stripe_charge_id=payment.stripe_session_id,
                 amount=10,  # default amount if product is unknown
                 reason=f"Something went wrong",
-                test = test_mode
+                test=test_mode
             )
             messages.error(request, "Something went wrong, we will refund you.")
-        if product.stock > 0:
+        if product.stock >= 0:
             dispense_time = 5
             context = {
                 "product": product,
@@ -227,10 +227,10 @@ def payment_success(request, id):
             messages.error(request, "Something went wrong, we will refund you.")
                 
             RefundModel.objects.create(
-                stripe_charge=payment.stripe_session_id,
+                stripe_charge_id=payment.stripe_session_id,
                 amount=10,  # default amount if product is unknown
-                reason=f"Something went wrong",
-                test = test_mode
+                reason=f"Product was out of stock",
+                test=test_mode
             )
             return redirect('order_screen')
     else:

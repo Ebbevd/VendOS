@@ -23,10 +23,22 @@
         <div class="container-fluid position-relative">
             <!-- Center: Brand -->
             <div class="mx-auto">
-                <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">VendOS</a>
+                <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">{{ VEND_NAME }}</a>
             </div>
             <div class="position-absolute end-0 me-3">
                 <a class="nav-link text-white" href="{% url 'test_landing_page' %}">Maintenance</a>
+            </div>
+        </div>
+    </nav>
+    {% else %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <div class="container-fluid position-relative">
+            <!-- Center: Brand -->
+            <div class="mx-auto">
+                <a class="navbar-brand fw-bold" href="{% url 'splash_screen' %}">{{ VEND_NAME }}</a>
+            </div>
+            <div class="position-absolute end-0 me-3">
+                <a class="nav-link text-white" href="">Info</a>
             </div>
         </div>
     </nav>

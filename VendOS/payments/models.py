@@ -21,4 +21,4 @@ class RefundModel(models.Model):
     test= models.BooleanField(default=True)  # True if created in test mode
 
     def __str__(self):
-        return f"Refund {self.stripe_refund_id} for charge {self.stripe_charge_id} - Amount: {self.amount}"
+        return f"Refund {self.id} for charge {self.stripe_charge_id} - Amount: {self.amount}"
