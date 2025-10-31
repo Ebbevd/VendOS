@@ -1,6 +1,7 @@
 import stripe
 from django.conf import settings
 import requests
+from urllib.parse import urlparse
 
 if settings.DEBUG:
     stripe.api_key = settings.STRIPE_SK_TEST  # your test secret key
@@ -11,7 +12,12 @@ def update_stripe_webhook(webhook_id):
     ngrok_url = get_ngrok_url()
     if not ngrok_url:
         print("No ngrok URL found")
-        return
+        raise ValueError("No ngrok URL found")
+    parsed = urlparse(ngrok_url)
+    host = parsed.netloc  # gives 'sympodial-plicately-fredia.ngrok-free.dev'
+
+    if host not in settings.ALLOWED_HOSTS:
+        settings.ALLOWED_HOSTS.append(host)
 
     try:
         # Update the webhook endpoint URL

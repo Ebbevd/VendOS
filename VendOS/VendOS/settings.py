@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-395g4l$d4l+mhj*9znr$zasbqf#_kdph@2+-375)jfpf@apxi=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sympodial-plicately-fredia.ngrok-free.dev', "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "www.ds-technical-solutions.nl"]
 
 DISPENSE_TIME = 5  # seconds
 
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    "main.middleware.RestrictHostMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -134,7 +135,7 @@ CORS_ALLOW_METHODS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Berlin"
 
 USE_I18N = True
 
