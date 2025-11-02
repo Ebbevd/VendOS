@@ -11,8 +11,8 @@ else:
 def update_stripe_webhook(webhook_id):
     ngrok_url = get_ngrok_url()
     if not ngrok_url:
-        print("No ngrok URL found")
-        raise ValueError("No ngrok URL found")
+        print("[WARINGIN] No ngrok URL found")
+        pass
     parsed = urlparse(ngrok_url)
     host = parsed.netloc  # gives 'sympodial-plicately-fredia.ngrok-free.dev'
 
