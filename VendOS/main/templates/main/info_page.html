@@ -1,0 +1,26 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="test-header" style="text-align: center;">
+    <h1>Info</h1>
+</div>
+
+<div class="lined-container info-margins" style="padding: 2rem; background-color: #f0f8ff; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center;">
+    <h2 style="color: #2a7a2a; margin-bottom: 1rem;">🌱 Circular Postal Service!</h2>
+    <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">
+        Welcome to our vending experience! Here, you can discover <strong>lost or unclaimed mail packages</strong> and give them a new purpose.  
+        Each package you take helps reduce waste, promotes reuse, and supports a more sustainable, circular economy.
+    </p>
+    <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">
+        Our mission is to turn forgotten items into opportunities — practical for you, and better for the planet.  
+        By taking a package, you’re participating in a simple, meaningful way to reduce environmental impact while enjoying a little surprise along the way.
+    </p>
+    <p style="margin-top: 1rem; font-weight: bold; color: #155724;">
+        Use this machine to select your package today and join the circular movement! 📦💚
+    </p>
+    <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="Scan for info">
+    </div>
+</div>
+{% endblock %}

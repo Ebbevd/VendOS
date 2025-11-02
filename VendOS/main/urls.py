@@ -5,4 +5,5 @@ urlpatterns = [
     path('', v.splash_screen_view, name='splash_screen'),
     path('order', v.order_screen_view, name='order_screen'),
     path('order/confirm', v.order_package, name='order_package'),
+    path('info', v.info_page, name='info_page'),
 ]

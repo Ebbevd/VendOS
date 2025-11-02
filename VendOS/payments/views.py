@@ -68,11 +68,17 @@ def checkout(request, product_slot):
         return redirect('error_page')
     
     product = get_object_or_404(Product, slot_id=product_slot)
-    
-    payment, created = PaymentModel.objects.get_or_create(
-            stripe_session_id = "", # Not known yet
-            product_slot= product.slot_id,              
-            amount = product.price)
+    if settings.DEBUG:
+        payment, created = PaymentModel.objects.get_or_create(
+                stripe_session_id = "", # Not known yet
+                product_slot= product.slot_id,              
+                amount = product.price)
+    else:
+        payment, created = PaymentModel.objects.get_or_create(
+                stripe_session_id = "", # Not known yet
+                product_slot= product.slot_id,              
+                amount = product.price,
+                test=False)
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=[{

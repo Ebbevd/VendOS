@@ -7,6 +7,9 @@ import requests
 import stripe
 import time
 from django.conf import settings
+import qrcode
+import io
+import base64
 
 # Create your views here.
 def splash_screen_view(request):
@@ -96,8 +99,6 @@ def order_screen_view(request):
         print("Error in order_screen_view:", e)
         return redirect('error_page')
 
-    
-    
 def order_package(request):
     if request.method == "POST":
         slot_code = request.POST.get("slot_code")
@@ -116,3 +117,27 @@ def order_package(request):
             return redirect('order_screen')
 
     return render(request, "main/order_screen.html")
+
+def info_page(request):
+    qr = generate_qr_code(f"https://{settings.YOUR_WEB_URL}")
+    return render(request, "main/info_page.html", {"qr_code": qr})
+
+
+def generate_qr_code(data):
+    """
+    Generates a base64-encoded PNG QR code from a string (URL or text).
+    """
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    qr_code_base64 = base64.b64encode(buffered.getvalue()).decode()
+    return qr_code_base64

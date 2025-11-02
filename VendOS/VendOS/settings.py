@@ -25,9 +25,11 @@ VEND_NAME = "Dijk & Snijders"
 SECRET_KEY = "django-insecure-395g4l$d4l+mhj*9znr$zasbqf#_kdph@2+-375)jfpf@apxi="
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "www.ds-technical-solutions.nl"]
+YOUR_WEB_URL = "www.ds-technical-solutions.nl"  # Change to your actual domain if you have one, check out ours while you're at it :)
+
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", YOUR_WEB_URL] # You can send API requests to the machine from your own domain
 
 DISPENSE_TIME = 5  # seconds
 
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "main.middleware.RestrictHostMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -144,13 +147,15 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
-
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR/'VendOS', 'static')
+    BASE_DIR / 'VendOS' / 'static',  # Where you keep your app’s source static files
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collectstatic will copy them
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

@@ -20,6 +20,7 @@
         btn.addEventListener("click", function() {
             const url = this.dataset.url;
             const originalText = this.innerHTML;
+            const duration = {{duration}} * 1000 ;
 
             // Disable button and show loading spinner
             this.disabled = true;
@@ -28,23 +29,29 @@
                 Loading...
             `;
 
-            fetch(url, {
+            // Create a timeout promise for the duration
+            const wait = new Promise(resolve => setTimeout(resolve, duration));
+
+            // Fetch request promise
+            const request = fetch(url, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": "{{ csrf_token }}",
                 },
-            })
-            .then(res => res.json())
-            .then(data => {
-                // Restore button text
-                this.disabled = false;
-                this.innerHTML = originalText;
-            })
-            .catch(err => {
-                // Restore button text even if request fails
-                this.disabled = false;
-                this.innerHTML = originalText;
-            });
+            }).then(res => res.json());
+
+            // Wait for both fetch and duration to complete
+            Promise.all([request, wait])
+                .then(([data]) => {
+                    // Restore button text
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                })
+                .catch(err => {
+                    // Restore button text even if request fails
+                    this.disabled = false;
+                    this.innerHTML = originalText;
+                });
         });
     });
 </script>
