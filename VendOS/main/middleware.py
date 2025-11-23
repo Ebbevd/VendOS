@@ -9,7 +9,7 @@ class RestrictHostMiddleware:
     """
 
     ALLOWED_HOSTS = [settings.ALLOWED_HOSTS[-1], "wwww.ds-technical-solutions.nl"]  # or IPs like "3.90.12.45"
-    ALLOWED_PATHS = ["/payments/webhook", "/status/update-status", "/status/get-status"]             # paths that host is allowed to access
+    ALLOWED_PATHS = ["/payments/webhook", "/status/update-status", "/status/get-status", "/status/get-stock"]             # paths that host is allowed to access
     ALLOWED_METHODS = ["POST", "GET"]             
 
     def __init__(self, get_response):

@@ -22,10 +22,10 @@ VEND_NAME = "Dijk & Snijders"
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-395g4l$d4l+mhj*9znr$zasbqf#_kdph@2+-375)jfpf@apxi="
+SECRET_KEY = os.getenv("VENDOS_SECRET") #VENDOS_SECRET
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 YOUR_WEB_URL = "www.ds-technical-solutions.nl"  # Change to your actual domain if you have one, check out ours while you're at it :)
 

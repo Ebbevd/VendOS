@@ -72,7 +72,8 @@ def checkout(request, product_slot):
         payment, created = PaymentModel.objects.get_or_create(
                 stripe_session_id = "", # Not known yet
                 product_slot= product.slot_id,              
-                amount = product.price)
+                amount = product.price,
+                test = True)
     else:
         payment, created = PaymentModel.objects.get_or_create(
                 stripe_session_id = "", # Not known yet
