@@ -19,7 +19,7 @@ def test_motor(request, motor_id):
     if settings.DEBUG is False:
         return JsonResponse({"error": "Not available in production"}, status=403)
     if request.method == "POST":
-        success = trigger_motor(motor_id, duration=5)
+        success = trigger_motor(motor_id, duration=settings.DISPENSE_TIME)
         return JsonResponse({"success": success, "motor": motor_id})
     return JsonResponse({"success": False}, status=400)
 

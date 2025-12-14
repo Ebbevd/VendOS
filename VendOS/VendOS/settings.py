@@ -31,7 +31,7 @@ YOUR_WEB_URL = "www.ds-technical-solutions.nl"  # Change to your actual domain i
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", YOUR_WEB_URL] # You can send API requests to the machine from your own domain
 
-DISPENSE_TIME = 5  # seconds
+DISPENSE_TIME = 2.8  # seconds
 
 
 # Application definition
