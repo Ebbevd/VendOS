@@ -133,6 +133,46 @@ button.confirm {
     color: white;
 }
 
+.splash-container {
+    position: relative;
+    display: flex;
+    align-items: top;
+    justify-content: center;
+    height: 80vh;              /* full screen */
+    text-decoration: none;
+    animation: pulse 2.5s ease-in-out infinite;
+
+    background-size: cover;
+    background-position: center;
+    text-decoration: none;
+}
+
+.splash-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25); /* adjust darkness */
+    z-index: 1;
+}
+
+.splash-text {
+    margin-top: 30px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    z-index: 2;
+    color: black;
+    animation: flashText 2.5s ease-in-out infinite;
+}
+
+@keyframes flashText {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+}
+
 button#clear {
     background-color: #dc3545;
     color: white;
